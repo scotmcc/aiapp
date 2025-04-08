@@ -2,7 +2,9 @@
 
 ## Purpose
 
-This repository serves as a baseline for an AI project, providing a comprehensive setup with various technologies. It is designed to be a starting point for developers looking to build AI applications with a robust architecture. The framework assumes a basic understanding of Docker, C#, and the technologies used in this project. As well as a basic understanding of AI and machine learning concepts. The project is not intended to be a complete solution but rather a foundation for further development and experimentation. It is also assumed that the user will be using Ollama's LLMs, which are open source and available for free. The project is designed to be modular and extensible, allowing developers to easily add new features and functionality as needed. The goal is to provide a solid starting point for building AI applications that can be deployed in a production environment.
+This repository serves as a baseline for an AI project, providing a comprehensive setup with various technologies. It is designed to be a starting point for developers looking to build AI applications with a robust architecture. The framework assumes a basic understanding of Docker, C#, and the technologies used in this project. As well as a basic understanding of AI and machine learning concepts.
+
+The project is not intended to be a complete solution but rather a foundation for further development and experimentation. It is also assumed that the user will be using Ollama's LLMs, which are open source and available for free. The project is designed to be modular and extensible, allowing developers to easily add new features and functionality as needed. The goal is to provide a solid starting point for building AI applications that can be deployed in a production environment.
 
 ## Description
 
@@ -102,7 +104,6 @@ Use Docker Compose to build and run the services:
     ├── api # C# API project
     │   ├── Controllers
     │   ├── Data
-    │   ├── Migrations
     │   ├── Properties
     └── gui # C# Blazor project
         ├── Components
