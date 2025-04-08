@@ -1,0 +1,39 @@
+{
+    "TCP": {
+        "443": {
+            "HTTPS": true
+        },
+        "80": {
+            "HTTPS": false
+        }
+    },
+    "Web": {
+        "${TS_CERT_DOMAIN}:443": {
+            "Handlers": {
+                "/": {
+                    "Proxy": "http://0.0.0.0:5000",
+                    "Upgrade": "websocket"
+                },
+                "/api": {
+                    "Proxy": "http://0.0.0.0:5001"
+                },
+                "/redis": {
+                    "Proxy": "http://0.0.0.0:5540/redis"
+                },
+                "/admin": {
+                    "Proxy": "http://0.0.0.0:80/admin"
+                },
+                "/qdrant": {
+                    "Proxy": "http://0.0.0.0:80/qdrant"
+                }
+            }
+        },
+        "${TS_CERT_DOMAIN}:80": {
+            "Handlers": {
+                "/": {
+                    "Proxy": "http://0.0.0.0:80"
+                }
+            }
+        }
+    }
+}

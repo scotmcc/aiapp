@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>AI App</PageTitle>
+
+<TopNavBar />
+
+<main class="container-fluid h-100 mt-2 @(_collapsed ? "collapsed" : "")">
+    <div class="row h-100">
+        <div class="col-3 sidebar">
+            <button class="btn btn-sm ms-2" type="button" @onclick="ToggleCollapse">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <SideNavBar />
+        </div>
+        <div class="col main-content">
+            @Body
+        </div>
+    </div>
+</main>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private bool _collapsed = false;
+    private void ToggleCollapse()
+    {
+        Console.WriteLine("ToggleCollapse called");
+        _collapsed = !_collapsed;
+        StateHasChanged();
+    }
+}
