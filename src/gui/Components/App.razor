@@ -1,10 +1,12 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    <link rel="stylesheet" href="@Assets["dist/fontawesome/css/all.min.css"]" />
+    <link rel="stylesheet" href="@Assets["dist/bootstrap/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["UI.styles.css"]" />
     <ImportMap />
@@ -13,6 +15,8 @@
 
 <body>
     <Routes @rendermode="InteractiveServer" />
+    <script src="dist/popper.js"></script>
+    <script src="dist/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="_framework/blazor.web.js"></script>
 </body>
 

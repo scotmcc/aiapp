@@ -1,7 +1,28 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<h1>API Test!</h1>
 
-<h1>Hello, world!</h1>
+<div class="input-group input-group-sm">
+    <span class="input-group-text">API URL</span>
+    <textarea class="form-control">@ApiResponse</textarea>
+    <button class="btn btn-outline-secondary" type="button" @onclick="TestApi">Test</button>
+</div>
 
-Welcome to your new app.
+@code {
+    private string ApiResponse { get; set; } = string.Empty;
+    [Inject] private IHttpClientFactory HttpClientFactory { get; set; } = default!;
+    private async void TestApi()
+    {
+        var httpClient = HttpClientFactory.CreateClient("ApiClient");
+        var response = await httpClient.GetAsync("weatherforecast");
+        if (response.IsSuccessStatusCode)
+        {
+            ApiResponse = await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            ApiResponse = "Error: " + response.StatusCode;
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+}

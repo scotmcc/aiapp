@@ -12,7 +12,7 @@ docker/redis/data
 docker/tailscale/data
 docker/webui/keys
 docker/
-
+Migrations/
 
 # dotenv files
 .env
