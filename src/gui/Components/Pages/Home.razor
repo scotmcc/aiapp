@@ -67,7 +67,8 @@ Content = "You are a helpful assistant."
                 Temperature = 0.7f
             }
         };
-        var response = await ollama.ChatAsync(request).StreamToEndAsync();
+        var response = await ollama.ChatAsync(request).StreamToEndAsync() ??
+        throw new Exception("Failed to get a response from the API.");
         Messages.Add(response.Message);
         await InvokeAsync(StateHasChanged);
     }

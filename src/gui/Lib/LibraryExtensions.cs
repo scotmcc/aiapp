@@ -9,18 +9,22 @@ namespace UI.Lib
     {
         public static IServiceCollection AddLibraryServices(this IServiceCollection services)
         {
-            var redisConnectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING") ?? "localhost:6379";
-            var ollamaApiUrl = Environment.GetEnvironmentVariable("OLLAMA_API_URL") ?? "http://mac.bigeye-goblin.ts.net:11434";
+            var redisConnectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING") ??
+                throw new InvalidOperationException("REDIS_CONNECTION_STRING environment variable is not set.");
+            var ollamaApiUrl = Environment.GetEnvironmentVariable("OLLAMA_API_URL") ??
+                throw new InvalidOperationException("OLLAMA_API_URL environment variable is not set.");
+            var ollamaBaseModel = Environment.GetEnvironmentVariable("OLLAMA_BASE_MODEL") ??
+                throw new InvalidOperationException("OLLAMA_BASE_MODEL environment variable is not set.");
+            var apiBaseURl = Environment.GetEnvironmentVariable("API_BASE_URL") ??
+                throw new InvalidOperationException("API_BASE_URL environment variable is not set.");
             services.AddSingleton(ConnectionMultiplexer.Connect(redisConnectionString));
-            services.AddScoped(_ => new OllamaApiClient(ollamaApiUrl, "llama3.2:3b"));
+            services.AddSingleton(_ => new OllamaApiClient(ollamaApiUrl, ollamaBaseModel));
             services.AddSingleton<IRedisService, RedisService>();
             services.AddHttpClient<IApiService, ApiService>(client =>
             {
-                var baseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") ?? "https://aiapp.bigeye-goblin.ts.net/api/";
-                client.BaseAddress = new Uri(baseUrl);
+                client.BaseAddress = new Uri(apiBaseURl);
             });
             return services;
         }
-
     }
 }
