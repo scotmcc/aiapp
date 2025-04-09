@@ -1,8 +1,10 @@
 using UI.Components;
+using UI.Lib;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddLibraryServices();
 
 builder.Services.AddHttpClient("ApiClient", client =>
 {

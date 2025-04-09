@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NRedisStack" Version="0.13.2" />
+    <PackageReference Include="OllamaSharp" Version="5.1.10" />
+  </ItemGroup>
+
 </Project>

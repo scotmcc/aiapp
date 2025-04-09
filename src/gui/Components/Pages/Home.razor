@@ -2,27 +2,73 @@
 
 <h1>API Test!</h1>
 
-<div class="input-group input-group-sm">
+<div class="input-group input-group-sm mb-3">
     <span class="input-group-text">API URL</span>
     <textarea class="form-control">@ApiResponse</textarea>
     <button class="btn btn-outline-secondary" type="button" @onclick="TestApi">Test</button>
 </div>
 
+<div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+    @foreach (var message in Messages)
+    {
+        <div class="message">
+            <strong>@message.Role:</strong> @message.Content
+        </div>
+    }
+</div>
+
+<div class="input-group input-group-sm">
+    <span class="input-group-text">Ollama Chat</span>
+    <textarea class="form-control" @bind="OllamaRequest" @bind:event="oninput" @onkeydown="OnKeyDown"></textarea>
+    <button class="btn btn-outline-secondary" type="button" @onclick="TestOllamaApi">Send Message</button>
+</div>
+
+@inject IApiService ApiService
+@inject OllamaApiClient ollama
+
 @code {
     private string ApiResponse { get; set; } = string.Empty;
+    private string OllamaResponse { get; set; } = string.Empty;
+    private string OllamaRequest { get; set; } = string.Empty;
+    private List<Message> Messages { get; set; } = [
+    new Message
+{
+Role = "system",
+Content = "You are a helpful assistant."
+}
+    ];
     [Inject] private IHttpClientFactory HttpClientFactory { get; set; } = default!;
     private async void TestApi()
     {
-        var httpClient = HttpClientFactory.CreateClient("ApiClient");
-        var response = await httpClient.GetAsync("weatherforecast");
-        if (response.IsSuccessStatusCode)
+        ApiResponse = await ApiService.Get("weatherforecast");
+        await InvokeAsync(StateHasChanged);
+    }
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
         {
-            ApiResponse = await response.Content.ReadAsStringAsync();
+            TestOllamaApi();
         }
-        else
+    }
+    private async void TestOllamaApi()
+    {
+        Messages.Add(new Message
         {
-            ApiResponse = "Error: " + response.StatusCode;
-        }
+            Role = "user",
+            Content = OllamaRequest
+        });
+        OllamaRequest = string.Empty;
+        await InvokeAsync(StateHasChanged);
+        ChatRequest request = new()
+        {
+            Messages = Messages,
+            Options = new()
+            {
+                Temperature = 0.7f
+            }
+        };
+        var response = await ollama.ChatAsync(request).StreamToEndAsync();
+        Messages.Add(response.Message);
         await InvokeAsync(StateHasChanged);
     }
 }

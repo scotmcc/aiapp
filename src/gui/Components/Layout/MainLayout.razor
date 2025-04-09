@@ -4,17 +4,15 @@
 
 <TopNavBar />
 
-<main class="container-fluid h-100 mt-2 @(_collapsed ? "collapsed" : "")">
-    <div class="row h-100">
-        <div class="col-3 sidebar">
-            <button class="btn btn-sm ms-2" type="button" @onclick="ToggleCollapse">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <SideNavBar />
-        </div>
-        <div class="col main-content">
-            @Body
-        </div>
+<main class="@(_collapsed ? "collapsed" : "")">
+    <div class="sidebar">
+        <button class="btn btn-sm ms-2" type="button" @onclick="ToggleCollapse">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <SideNavBar />
+    </div>
+    <div class="main-content">
+        @Body
     </div>
 </main>
 
@@ -24,12 +22,30 @@
     <span class="dismiss">🗙</span>
 </div>
 
+@inject IRedisService RedisService
+
 @code {
     private bool _collapsed = false;
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("OnInitializedAsync called");
+        var result = await RedisService.GetState("collapsed");
+        if (result != RedisValue.Null)
+        {
+            _collapsed = bool.Parse(result.ToString()!);
+            Console.WriteLine($"Collapsed state from Redis: {_collapsed}");
+        }
+        else
+        {
+            Console.WriteLine("No collapsed state found in Redis, defaulting to false.");
+        }
+    }
     private void ToggleCollapse()
     {
         Console.WriteLine("ToggleCollapse called");
         _collapsed = !_collapsed;
+        Console.WriteLine($"New collapsed state: {_collapsed}");
+        RedisService.SetState("collapsed", _collapsed.ToString());
         StateHasChanged();
     }
 }
