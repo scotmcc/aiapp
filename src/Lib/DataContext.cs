@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Data
+namespace AIApp.Lib
 {
     public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
     {

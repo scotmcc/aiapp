@@ -29,7 +29,7 @@ services:
     network_mode: service:tailscale
     depends_on:
       - tailscale
-      - webapi
+      - webui
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
       - ./docker/nginx/html:/usr/share/nginx/html
@@ -109,44 +109,28 @@ services:
     network_mode: service:tailscale
     depends_on:
       - tailscale
-      - webapi
-      - redis
-    volumes:
-      - ./src/gui:/app
-      - ./docker/webui/keys:/root/.aspnet/DataProtection-Keys
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    command: [ "dotnet", "run", "--project", "/app/UI.csproj", "--urls", "http://+:5000" ]
-    develop:
-      watch:
-        - action: restart
-          path: ./src/gui
-          ignore:
-            - '**/bin/*'
-            - '**/obj/*'
-
-  webapi:
-    image: mcr.microsoft.com/dotnet/sdk:9.0
-    container_name: webapi
-    restart: unless-stopped
-    network_mode: service:tailscale
-    depends_on:
-      - tailscale
       - postgres
       - qdrant
       - redis
     volumes:
-      - ./src/api:/app
+      - ./src:/app
+      - ./docker/webui/keys:/root/.aspnet/DataProtection-Keys
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-    command: [ "dotnet", "run", "--project", "/app/Api.csproj", "--urls", "http://+:5001" ]
+      - API_BASE_URL=${API_BASE_URL}
+      - REDIS_CONNECTION_STRING=${REDIS_CONNECTION_STRING}
+      - OLLAMA_API_URL=${OLLAMA_API_URL}
+      - OLLAMA_BASE_MODEL=${OLLAMA_BASE_MODEL}
+      - OLLAMA_CHAT_MODEL=${OLLAMA_CHAT_MODEL}
+      - OLLAMA_AGENT_MODEL=${OLLAMA_AGENT_MODEL}
+    command: [ "dotnet", "run", "--project", "/app/AIApp.csproj", "--urls", "http://+:5000" ]
     develop:
       watch:
         - action: restart
-          path: ./src/api
+          path: ./src
           ignore:
             - '**/bin/*'
             - '**/obj/*'

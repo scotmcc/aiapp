@@ -1,22 +1,22 @@
-using Api.Data;
+using AIApp.Components;
+using AIApp.Lib;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddDataServices(builder.Configuration);
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+builder.Services.AddLibraryServices();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
-app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapControllers();
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 using (var scope = app.Services.CreateScope())
 {

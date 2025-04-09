@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using StackExchange.Redis;
 
-namespace UI.Lib.Interfaces
+namespace AIApp.Lib.Interfaces
 {
     public interface IRedisService
     {

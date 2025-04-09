@@ -14,9 +14,13 @@ main {
     transition: all 0.3s ease-in-out;
 }
 
+.sidebar span {
+    transition: all 0.3s ease-in-out;
+}
+
 .sidebar {
     left: 0;
-    width: 20em;
+    width: 10em;
     padding: 0.5em;
 }
 
@@ -29,7 +33,7 @@ main {
 }
 
 .main-content {
-    left: 20em;
+    left: 10em;
     right: 0;
     padding: 1em;
     margin-left: 1em;
@@ -40,7 +44,9 @@ main {
 
 .collapsed .sidebar {
     width: 3em;
-    overflow: hidden;
+}
+.collapsed .sidebar span {
+    color: transparent;
 }
 .collapsed .main-content {
     left: 3em;

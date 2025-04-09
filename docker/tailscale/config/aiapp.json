@@ -14,9 +14,6 @@
                     "Proxy": "http://0.0.0.0:5000",
                     "Upgrade": "websocket"
                 },
-                "/api": {
-                    "Proxy": "http://0.0.0.0:5001"
-                },
                 "/redis": {
                     "Proxy": "http://0.0.0.0:5540/redis"
                 },

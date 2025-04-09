@@ -1,7 +1,7 @@
 using System.Text;
-using UI.Lib.Interfaces;
+using AIApp.Lib.Interfaces;
 
-namespace UI.Lib.Services
+namespace AIApp.Lib.Services
 {
     public class ApiService(HttpClient httpClient) : IApiService
     {

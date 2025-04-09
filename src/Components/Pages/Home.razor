@@ -1,26 +1,36 @@
 ﻿@page "/"
 
-<h1>API Test!</h1>
+<h3>System Test!</h3>
 
-<div class="input-group input-group-sm mb-3">
+<div class="input-group input-group-sm mt-3">
     <span class="input-group-text">API URL</span>
     <textarea class="form-control">@ApiResponse</textarea>
-    <button class="btn btn-outline-secondary" type="button" @onclick="TestApi">Test</button>
+    <button class="btn btn-outline-primary" type="button" @onclick="TestApi">
+        <i class="fas fa-redo"></i>
+    </button>
 </div>
 
-<div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
-    @foreach (var message in Messages)
-    {
-        <div class="message">
-            <strong>@message.Role:</strong> @message.Content
-        </div>
-    }
-</div>
-
-<div class="input-group input-group-sm">
-    <span class="input-group-text">Ollama Chat</span>
-    <textarea class="form-control" @bind="OllamaRequest" @bind:event="oninput" @onkeydown="OnKeyDown"></textarea>
-    <button class="btn btn-outline-secondary" type="button" @onclick="TestOllamaApi">Send Message</button>
+<div class="mt-3 card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Ollama Chat</h5>
+        <button class="btn btn-outline-danger" type="button" @onclick="ResetChat">
+            <i class="fas fa-undo"></i>
+        </button>
+    </div>
+    <div class="card-body" style="height: 300px;">
+        @foreach (var message in Messages)
+        {
+            <div class="message">
+                <strong>@message.Role:</strong> @message.Content
+            </div>
+        }
+    </div>
+    <div class="card-footer d-flex input-group input-group-sm">
+        <textarea class="form-control" @bind="OllamaRequest" @bind:event="oninput" @onkeydown="OnKeyDown"></textarea>
+        <button class="btn btn-outline-primary" type="button" @onclick="TestOllamaApi">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
 </div>
 
 @inject IApiService ApiService
@@ -30,13 +40,7 @@
     private string ApiResponse { get; set; } = string.Empty;
     private string OllamaResponse { get; set; } = string.Empty;
     private string OllamaRequest { get; set; } = string.Empty;
-    private List<Message> Messages { get; set; } = [
-    new Message
-{
-Role = "system",
-Content = "You are a helpful assistant."
-}
-    ];
+    private List<Message> Messages { get; set; } = [ new Message { Role = "system", Content = "You are a helpful assistant."} ];
     [Inject] private IHttpClientFactory HttpClientFactory { get; set; } = default!;
     private async void TestApi()
     {
@@ -49,6 +53,13 @@ Content = "You are a helpful assistant."
         {
             TestOllamaApi();
         }
+    }
+    private void ResetChat() {
+        Messages.Clear();
+        Messages.Add(new Message { Role = "system", Content = "You are a helpful assistant." });
+        OllamaRequest = string.Empty;
+        ApiResponse = string.Empty;
+        StateHasChanged();
     }
     private async void TestOllamaApi()
     {

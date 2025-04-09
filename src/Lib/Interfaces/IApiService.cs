@@ -1,4 +1,4 @@
-namespace UI.Lib.Interfaces
+namespace AIApp.Lib.Interfaces
 {
     public interface IApiService
     {

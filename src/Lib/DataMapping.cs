@@ -1,6 +1,6 @@
 using AutoMapper;
 
-namespace Api.Data
+namespace AIApp.Lib
 {
     public class DataMapping : Profile
     {

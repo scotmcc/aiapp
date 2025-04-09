@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using StackExchange.Redis;
-using UI.Lib.Interfaces;
+using AIApp.Lib.Interfaces;
 
-namespace UI.Lib.Services
+namespace AIApp.Lib.Services
 {
     public class RedisService(ConnectionMultiplexer redis) : IRedisService
     {
