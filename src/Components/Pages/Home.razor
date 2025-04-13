@@ -13,74 +13,107 @@
 <div class="mt-3 card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Ollama Chat</h5>
-        <button class="btn btn-outline-danger" type="button" @onclick="ResetChat">
+        <button class="btn btn-outline-danger" type="button">
             <i class="fas fa-undo"></i>
         </button>
     </div>
-    <div class="card-body" style="height: 300px;">
-        @foreach (var message in Messages)
+    <div class="card-body" style="height: 300px; overflow-y: auto;">
+        @foreach (var message in ChatService.Messages)
         {
-            <div class="message">
-                <strong>@message.Role:</strong> @message.Content
+            <div class="alert alert-@(message.Role == "user" ? "primary" : "success") message">
+                @((MarkupString) Markdown.ToHtml(message.Content ?? ""))
             </div>
         }
     </div>
     <div class="card-footer d-flex input-group input-group-sm">
-        <textarea class="form-control" @bind="OllamaRequest" @bind:event="oninput" @onkeydown="OnKeyDown"></textarea>
-        <button class="btn btn-outline-primary" type="button" @onclick="TestOllamaApi">
+        <textarea class="form-control" @bind="OllamaRequest" @bind:event="oninput" @onkeydown="OnKeyDownChat"
+            disabled=@ChatLoading></textarea>
+        <button class="btn btn-outline-primary" type="button" @onclick="TestOllamaApi" disabled=@ChatLoading>
             <i class="fas fa-paper-plane"></i>
         </button>
     </div>
 </div>
 
+<div class="input-group input-group-sm mt-3">
+    <textarea class="form-control" @bind="VoiceRequest" @bind:event="oninput" @onkeydown="OnKeyDownChat"
+        disabled=@VoiceLoading></textarea>
+    <button class="btn btn-outline-primary" type="button" @onclick="TestVoice" disabled=@VoiceLoading>
+        <i class="fas fa-paper-plane"></i>
+    </button>
+</div>
+
+<script>
+    function PlayAudio(path) {
+        var audio = new Audio(path);
+        audio.play();
+        delete audio;
+    };
+</script>
+
+@inject IJSRuntime JSRuntime
 @inject IApiService ApiService
-@inject OllamaApiClient ollama
+@inject IVoiceService VoiceService
+@inject IChatService ChatService
 
 @code {
     private string ApiResponse { get; set; } = string.Empty;
     private string OllamaResponse { get; set; } = string.Empty;
     private string OllamaRequest { get; set; } = string.Empty;
-    private List<Message> Messages { get; set; } = [ new Message { Role = "system", Content = "You are a helpful assistant."} ];
+    private string VoiceRequest { get; set; } = string.Empty;
+    private bool ChatLoading { get; set; } = false;
+    private bool VoiceLoading { get; set; } = false;
+    protected override void OnInitialized()
+    {
+        ChatService.OnUpdate += async () =>
+        {
+            ChatLoading = false;
+            await InvokeAsync(StateHasChanged);
+        };
+        VoiceService.OnUpdate += async (string path) =>
+        {
+            VoiceLoading = false;
+            await JSRuntime.InvokeVoidAsync("PlayAudio", path);
+            await InvokeAsync(StateHasChanged);
+        };
+    }
     [Inject] private IHttpClientFactory HttpClientFactory { get; set; } = default!;
     private async void TestApi()
     {
         ApiResponse = await ApiService.Get("weatherforecast");
         await InvokeAsync(StateHasChanged);
     }
-    private void OnKeyDown(KeyboardEventArgs e)
+    private void OnKeyDownChat(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !e.ShiftKey)
         {
             TestOllamaApi();
         }
     }
-    private void ResetChat() {
-        Messages.Clear();
-        Messages.Add(new Message { Role = "system", Content = "You are a helpful assistant." });
-        OllamaRequest = string.Empty;
-        ApiResponse = string.Empty;
-        StateHasChanged();
+    private void OnKeyDownVoice(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            TestVoice();
+        }
+    }
+    private async void TestVoice()
+    {
+        // run a bash script and then play an audio file
+        VoiceLoading = true;
+        var _text = VoiceRequest;
+        VoiceRequest = string.Empty;
+        await InvokeAsync(StateHasChanged);
+        string path = await VoiceService.GenerateAudio(_text);
+        VoiceLoading = false;
+        await InvokeAsync(StateHasChanged);
+        await JSRuntime.InvokeVoidAsync("PlayAudio", path);
     }
     private async void TestOllamaApi()
     {
-        Messages.Add(new Message
-        {
-            Role = "user",
-            Content = OllamaRequest
-        });
+        if (string.IsNullOrWhiteSpace(OllamaRequest)) return;
+        ChatService.SendMessage(OllamaRequest);
         OllamaRequest = string.Empty;
-        await InvokeAsync(StateHasChanged);
-        ChatRequest request = new()
-        {
-            Messages = Messages,
-            Options = new()
-            {
-                Temperature = 0.7f
-            }
-        };
-        var response = await ollama.ChatAsync(request).StreamToEndAsync() ??
-        throw new Exception("Failed to get a response from the API.");
-        Messages.Add(response.Message);
+        ChatLoading = true;
         await InvokeAsync(StateHasChanged);
     }
 }

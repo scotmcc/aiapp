@@ -42,7 +42,7 @@ start_services() {
     if [ "$clear_logs_flag" = true ]; then
         clear_logs
     fi
-    $(compose_command) up -d
+    $(compose_command) up -d --remove-orphans
 }
 
 # Stop Docker containers
@@ -53,6 +53,7 @@ stop_services() {
     if [ "$clear_logs_flag" = true ]; then
         clear_logs
     fi
+    dotnet clean
 }
 
 watch_services() {
@@ -61,6 +62,8 @@ watch_services() {
     if [ "$clear_logs_flag" = true ]; then
         clear_logs
     fi
+    dotnet restore
+    dotnet restore --source ./src/AIApp.csproj 
     $(compose_command) up --watch
 }
 

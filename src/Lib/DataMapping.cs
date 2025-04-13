@@ -1,3 +1,5 @@
+using AIApp.Lib.Entities;
+using AIApp.Lib.Models;
 using AutoMapper;
 
 namespace AIApp.Lib
@@ -6,7 +8,7 @@ namespace AIApp.Lib
     {
         public DataMapping()
         {
-
+            CreateMap<MemoryEntity, MemoryModel>().ReverseMap();
         }
     }
 }

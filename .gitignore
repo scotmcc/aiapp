@@ -13,9 +13,13 @@ docker/tailscale/data
 docker/webui/keys
 docker/
 Migrations/
+*.[Mm]odelfile
+tmp/
+**/wwwroot/audio/*
 
 # dotenv files
 .env
+*.pid
 
 # User-specific files
 *.rsuser
@@ -493,3 +497,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Python related
+__pycache__/
+voiceenv/
+voice/output/
